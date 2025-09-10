@@ -33,30 +33,31 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("submit", function (event) {
     event.preventDefault(); // Impede o envio padrão do formulário
 
-    const formData = {
-      nomeLoja: document.getElementById("nomeLoja").value,
-      localizacaoLoja: document.getElementById("localizacaoLoja").value,
-      descricaoProblema: document.getElementById("descricaoProblema").value,
-      nivelGravidade: selectedSeverity, // Usa o valor da gravidade selecionada
-      contato: document.getElementById("contato").value,
-      // A foto do problema é mais complexa para enviar via JSON diretamente.
-      // Se precisar enviar a foto, considere usar FormData e um endpoint que aceite multipart/form-data.
-      // Por simplicidade, este exemplo não inclui o envio da foto.
-    };
+    const formData = new FormData(); // Cria um objeto FormData
 
-    // Envia os dados para o Webhook do n8n
+    // Adiciona os campos de texto ao FormData
+    formData.append("nomeLoja", document.getElementById("nomeLoja").value);
+    formData.append("localizacaoLoja", document.getElementById("localizacaoLoja").value);
+    formData.append("descricaoProblema", document.getElementById("descricaoProblema").value);
+    formData.append("nivelGravidade", selectedSeverity);
+    formData.append("contato", document.getElementById("contato").value);
+
+    // Adiciona o arquivo da foto, se houver
+    if (fotoProblemaInput.files.length > 0) {
+      formData.append("fotoProblema", fotoProblemaInput.files[0]);
+    }
+
+    // Envia os dados para o Webhook do n8n usando FormData
     fetch("https://n8n.srv882894.hstgr.cloud/webhook-test/4e33cb60-b7cc-4a49-bead-ce3cb2cbb0ef", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
+      body: formData, // Não defina Content-Type para FormData, o navegador faz isso automaticamente
     })
       .then((response) => response.json())
       .then((data) => {
         console.log("Sucesso:", data);
         alert("Solicitação enviada com sucesso!");
         form.reset(); // Limpa o formulário após o envio
+        previewFoto.src = "#";
         previewFoto.style.display = "none";
         severityButtons.forEach((btn) => btn.classList.remove("selected"));
         selectedSeverity = "";
