@@ -486,7 +486,7 @@ document.addEventListener("DOMContentLoaded", function () {
         message: 'Teste de conectividade'
       };
       
-      const response = await fetch(https://n8n.srv882894.hstgr.cloud/webhook-test/4e33cb60-b7cc-4a49-bead-ce3cb2cbb0ef, {
+      const response = await fetch(WEBHOOK_URL, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
